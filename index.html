@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Etch-A-Sketch</title>
+    <link href='main.css' rel='stylesheet'>
+  </head>
+  <body>
+    <header>
+      <button id='new-grid'>New Grid</button>
+    </header>
+    <div id='grid-container'>
+    </div>
+
+    <script>
+      const grid = document.querySelector('#grid-container');
+      let gridSize = 16;
+      let divGridItem = '';
+
+      // initial grid setup on page load
+      createGrid(gridSize);
+      // adds event listeners on page load
+      setEventListeners(divGridItem);
+
+      const newGridBtn = document.getElementById('new-grid');
+      newGridBtn.addEventListener('click', promptUser);
+
+      function promptUser() {
+        gridSize = prompt('Size of your new grid?');
+        removeGrid();
+        createGrid(gridSize);
+      }
+
+      function removeGrid() {
+        for(;grid.firstChild;) {
+          grid.removeChild(grid.firstChild);
+        }
+        grid.removeAttribute('style');
+      }
+
+      function createGrid(size) {
+        let gridSize = size * size;
+        for(let i = 1; i <= gridSize; i++) {
+          let newDiv = document.createElement('div');
+          newDiv.classList.toggle('grid-item');
+          newDiv.setAttribute('id',i);
+          grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+          grid.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+          grid.appendChild(newDiv);
+        }
+        setEventListeners();
+      }
+
+      function randomColor() {
+        let arrayRGB = [];
+        for(let i = 0; i < 3; i++) {
+          arrayRGB[i] = Math.floor(Math.random() * 256);
+        }
+        let newRGB = 'rgb(' + arrayRGB[0] + ',' + arrayRGB[1] + ',' + arrayRGB[2] + ')';
+        return newRGB;
+      }
+
+      function setEventListeners() {
+        divGridItem = document.querySelectorAll('.grid-item');
+        divGridItem.forEach(x => {
+          x.addEventListener('mouseover', () => {
+            changeColor(event, randomColor)
+          });
+        });
+      }
+
+      function changeColor(e, color) {
+        if(e.target.className !== 'grid-item') {
+          return // skip event
+        }
+        // don't like this 'solve'. want to come back with a better solution later
+        divGridItem[e.target.id-1].style.backgroundColor = color();
+      }
+
+    </script>
+  </body>
+</html>
